@@ -46,6 +46,9 @@ public class JobSeeker {
 	@OneToMany(mappedBy = "jobSeeker", cascade = CascadeType.ALL)
 	private java.util.List<UserSkillSet> userSkillSets;
 	
+	@OneToMany(mappedBy="jobSeeker", cascade = CascadeType.ALL)
+	private List<LocationUserPreference> userLocations;
+	
 	@Column(name = "first_name", nullable = false)
 	private String firstName;
 
@@ -112,7 +115,7 @@ public class JobSeeker {
 	}
 
 	public JobSeeker() {
-
+		
 	}
 
 	public int getJobSeekerId() {

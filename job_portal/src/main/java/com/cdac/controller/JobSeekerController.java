@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cdac.entity.JobSeeker;
+import com.cdac.entity.Location;
 import com.cdac.entity.SkillSet;
 import com.cdac.entity.UserSkillSet;
 import com.cdac.repository.SkillSetRepo;
 import com.cdac.service.JobSeekerService;
+import com.cdac.service.LocationUserPreferenceService;
 import com.cdac.service.SkillSetService;
 import com.cdac.service.UserSkillSetService;
 
@@ -33,6 +35,9 @@ public class JobSeekerController {
 	
 	@Autowired
 	private UserSkillSetService userSkillSetService;
+	
+	@Autowired
+	private LocationUserPreferenceService locationUserPreferenceService;
 
 	
 	@GetMapping("/hello")
@@ -87,7 +92,7 @@ public class JobSeekerController {
 			return new ResponseEntity<>(jobSeeker.getFirstName(), HttpStatus.OK);
 		}
 		
-		return new ResponseEntity<>(jobSeeker.getFirstName(), HttpStatus.OK);
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
 	
 	/*
@@ -96,6 +101,16 @@ public class JobSeekerController {
 	@GetMapping("suggestSkills")
 	public ResponseEntity<List<SkillSet>> suggestSkills (String name, HttpSession session){
 		return new ResponseEntity<>(skillSetService.listMatchSkill(name), HttpStatus.OK);
+	}
+	
+	@PostMapping("addLocation")
+	public ResponseEntity<String> addLocationSingle(@RequestBody Location location, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			locationUserPreferenceService.addPreference(location, jobSeeker);
+			return new ResponseEntity<>(jobSeeker.getFirstName(), HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
 	
 }
