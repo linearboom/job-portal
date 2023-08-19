@@ -294,5 +294,13 @@ public class JobSeeker {
 		this.field2 = field2;
 	}
 
+	public List<LocationUserPreference> getUserLocations() {
+		return userLocations;
+	}
+
+	public void setUserLocations(List<LocationUserPreference> userLocations) {
+		this.userLocations = userLocations;
+	}
+
 
 }
