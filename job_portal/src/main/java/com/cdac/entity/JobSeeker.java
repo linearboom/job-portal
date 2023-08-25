@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.cdac.entity.employer.JobSeekerApplication;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -48,6 +49,20 @@ public class JobSeeker {
 	
 	@OneToMany(mappedBy="jobSeeker", cascade = CascadeType.ALL)
 	private List<LocationUserPreference> userLocations;
+	
+	@OneToMany(mappedBy="jobSeeker", cascade = CascadeType.ALL)
+	private List<EducationDetail> education;
+	
+	@OneToMany(mappedBy = "jobSeeker", cascade = CascadeType.ALL)
+	private List<JobTypePreference> jobTypePreference;
+	
+	
+	@OneToMany(mappedBy = "jobSeeker", cascade = CascadeType.ALL)
+	private List<DesignationPreference> jobDesignationPreference;
+	
+	@OneToMany(mappedBy = "jobSeeker", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<JobSeekerApplication> jobSeekerApplication;
 	
 	@Column(name = "first_name", nullable = false)
 	private String firstName;
@@ -301,6 +316,46 @@ public class JobSeeker {
 	public void setUserLocations(List<LocationUserPreference> userLocations) {
 		this.userLocations = userLocations;
 	}
+
+	public List<EducationDetail> getEducation() {
+		return education;
+	}
+
+	public void setEducation(List<EducationDetail> education) {
+		this.education = education;
+	}
+
+	public List<JobTypePreference> getJobTypePreference() {
+		return jobTypePreference;
+	}
+
+	public void setJobTypePreference(List<JobTypePreference> jobTypePreference) {
+		this.jobTypePreference = jobTypePreference;
+	}
+
+	public List<DesignationPreference> getJobDesignationPreference() {
+		return jobDesignationPreference;
+	}
+
+	public void setJobDesignationPreference(List<DesignationPreference> jobDesignationPreference) {
+		this.jobDesignationPreference = jobDesignationPreference;
+	}
+
+	public List<JobSeekerApplication> getJobSeekerApplication() {
+		return jobSeekerApplication;
+	}
+
+	public void setJobSeekerApplication(List<JobSeekerApplication> jobSeekerApplication) {
+		this.jobSeekerApplication = jobSeekerApplication;
+	}
+	
+	
+
+
+
+	
+	
+
 
 
 }

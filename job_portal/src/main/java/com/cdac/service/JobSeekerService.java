@@ -23,5 +23,13 @@ public class JobSeekerService {
 		return jobSeekerRepo.findByEmailAndPassword(jobSeeker.getEmail(), jobSeeker.getPassword());
 		
 	}
+
+	public void updateProfile(JobSeeker jobSeeker, JobSeeker validatedUser) {
+		validatedUser.setFirstName(jobSeeker.getFirstName());
+		validatedUser.setLastName(jobSeeker.getLastName());
+		validatedUser.setMobile(jobSeeker.getMobile());
+		// Additional Update Details
+		jobSeekerRepo.save(validatedUser);
+	}
 }
 

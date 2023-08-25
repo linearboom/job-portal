@@ -1,5 +1,7 @@
 package com.cdac.controller;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,7 @@ public class AdminController {
 	private SkillSetService skillSetService;
 
 	@PostMapping("/addSkill")
-	public ResponseEntity<String> addSkill(@RequestBody SkillSet skill){
+	public ResponseEntity<String> addSkill(@RequestBody SkillSet skill, HttpSession session){
 		// Check Session Management and Admin Login Logic
 		skill.setSkillApproved('1');
 		skillSetService.addSkill(skill);

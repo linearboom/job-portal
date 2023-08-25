@@ -7,24 +7,41 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cdac.entity.Designation;
+import com.cdac.entity.EducationDetail;
 import com.cdac.entity.JobSeeker;
+import com.cdac.entity.JobType;
+import com.cdac.entity.JobTypePreference;
 import com.cdac.entity.Location;
+import com.cdac.entity.Qualification;
 import com.cdac.entity.SkillSet;
 import com.cdac.entity.UserSkillSet;
+import com.cdac.entity.employer.Job;
+import com.cdac.entity.employer.JobSeekerApplication;
 import com.cdac.repository.SkillSetRepo;
+import com.cdac.service.DesignationPreferenceService;
+import com.cdac.service.DesignationService;
+import com.cdac.service.EducationDetailService;
 import com.cdac.service.JobSeekerService;
+import com.cdac.service.JobTypePreferenceService;
+import com.cdac.service.JobTypeService;
 import com.cdac.service.LocationUserPreferenceService;
+import com.cdac.service.QualificationService;
 import com.cdac.service.SkillSetService;
 import com.cdac.service.UserSkillSetService;
+import com.cdac.service.job.JobSeekerApplicationService;
+import com.cdac.service.job.JobService;
 
 @RestController
 @RequestMapping("/job_seeker")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class JobSeekerController {
 	
 	@Autowired
@@ -38,6 +55,34 @@ public class JobSeekerController {
 	
 	@Autowired
 	private LocationUserPreferenceService locationUserPreferenceService;
+	
+	@Autowired
+	private QualificationService qualificationService;
+	
+	
+	@Autowired
+	private EducationDetailService educationDetailService;
+	
+	@Autowired
+	private JobTypePreferenceService jobTypePreferenceService;
+	
+	@Autowired
+	private JobTypeService jobTypeService;
+	
+	@Autowired
+	private DesignationPreferenceService designationPreferenceService;
+	
+	@Autowired
+	private DesignationService designationService;
+	
+	@Autowired
+	private JobService jobService;
+	
+	
+	@Autowired
+	private JobSeekerApplicationService jobSeeeApplicationService;
+	
+
 
 	
 	@GetMapping("/hello")
@@ -65,6 +110,30 @@ public class JobSeekerController {
 		}
 	}
 	
+	@PostMapping("refresh")
+	public ResponseEntity<JobSeeker> validateUser(String name, HttpSession session){
+		JobSeeker seeker = (JobSeeker) session.getAttribute("user");
+		if (seeker != null) {
+			return new ResponseEntity<JobSeeker>(seeker, HttpStatus.OK);
+		}
+		return new ResponseEntity<JobSeeker>(seeker, HttpStatus.OK); 
+	}
+	
+	/*
+	 * Update the profile of the given job seeker
+	 */
+	@PostMapping("/updatePersonalProfile")
+	public ResponseEntity<String> updatePersonalProfile(@RequestBody JobSeeker jobSeeker, HttpSession session){
+		JobSeeker validatedUser = (JobSeeker) session.getAttribute("user");
+		if (validatedUser != null) {
+			jobSeekerService.updateProfile(jobSeeker, validatedUser);
+			return new ResponseEntity<>("Profile Updated", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+
+	
 	/*
 	 * Will Accept a List of Skills.
 	 * 
@@ -89,7 +158,7 @@ public class JobSeekerController {
 		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user");
 		if (jobSeeker != null) {
 			userSkillSetService.deleteUserSkill(skill, jobSeeker);
-			return new ResponseEntity<>(jobSeeker.getFirstName(), HttpStatus.OK);
+			return new ResponseEntity<>("Deleted Skill", HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
@@ -102,7 +171,9 @@ public class JobSeekerController {
 	public ResponseEntity<List<SkillSet>> suggestSkills (String name, HttpSession session){
 		return new ResponseEntity<>(skillSetService.listMatchSkill(name), HttpStatus.OK);
 	}
-	
+	/*
+	 * Will add a single location to the user preference
+	 */
 	@PostMapping("addLocation")
 	public ResponseEntity<String> addLocationSingle(@RequestBody Location location, HttpSession session){
 		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
@@ -112,5 +183,140 @@ public class JobSeekerController {
 		}
 		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
+	
+	/*
+	 * Will Return a list of all the available Qualification Types
+	 * Might not need these mapping
+	 */
+	@GetMapping("listQualificationTypes")
+	public ResponseEntity<List<Qualification>> listQualifications(){
+		return new ResponseEntity<List<Qualification>>(qualificationService.findAll(),HttpStatus.OK);
+	}
+	
+	/*
+	 * Will add education details to the job seeker
+	 */
+	@PostMapping("addEducation")
+	public ResponseEntity<String> addEducation(@RequestBody EducationDetail education, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			educationDetailService.addEducation(education, jobSeeker);
+			return new ResponseEntity<String>("1",HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+		}
+		
+	}
+	
+	/*
+	 * Will Delete the Education Details from that particular Job Seeker
+	 */
+	@PostMapping("/deleteEducation")
+	public ResponseEntity<String> deleteEducation(@RequestBody EducationDetail education, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			educationDetailService.deleteEducation(education, jobSeeker);
+			return new ResponseEntity<String>("1",HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+		}
+	}
+	
+	
+	/*
+	 * Lists all the Job Types : 
+	 * FT, PT, IS
+	 * 
+	 */
+	@GetMapping("getJobPreferenceTypes")
+	public ResponseEntity<List<JobType>> getJobPreferenceType(){
+		return new ResponseEntity<List<JobType>>(jobTypeService.findAll(),HttpStatus.OK);
+	}
+		
+	
+	/*
+	 * Adds the Job Preference
+	 * FT,  PT or Internship
+	 */
+	@PostMapping("addUserJobType")
+	public ResponseEntity<String> addJobPreferenceType(@RequestBody JobType jobType , HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			jobTypePreferenceService.addJobTypePreference(jobType, jobSeeker);
+			return new ResponseEntity<>("1", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	
+	
+	
+	/*
+	 * Deletes the Job Preference
+	 * FT, PT or Internship
+	 */
+	@PostMapping("deleteUserJobType")
+	public ResponseEntity<String> deleteJobPreferenceType(@RequestBody JobTypePreference jobType , HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			jobTypePreferenceService.deleteJobPreference(jobType, jobSeeker);
+			return new ResponseEntity<>("1", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	@GetMapping("searchDesignation")
+	public List<Designation> searchDesignations(String designation){
+		return designationService.searchByName(designation);
+	}
+	
+	/*
+	 * Adds the Job Designation Preference
+	 * 
+	 */
+	@PostMapping("addDesignationPreference")
+	public ResponseEntity<String> addDesignation(@RequestBody Designation designation, HttpSession session ){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			designationPreferenceService.addDesignationUser(designation, jobSeeker);
+			return new ResponseEntity<>("1", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	@GetMapping("listAllJobs")
+	public ResponseEntity<List<Job>> listAllJobs(){
+		return new ResponseEntity<List<Job>>( jobService.listAll(), HttpStatus.OK);
+	}
+	
+	@GetMapping("findByTitleNameJobs")
+	public ResponseEntity<List<Job>> findJobByRoleName(String titleName){
+		return new ResponseEntity<List<Job>>( jobService.searchByTitle(titleName), HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("containingTitleNameJobs")
+	public ResponseEntity<List<Job>> findContainingTitleName(String titleName){
+		return new ResponseEntity<List<Job>>(jobService.findContainingTitle(titleName), HttpStatus.OK);
+	}
+	
+	
+	
+	@PostMapping("applyJob")
+	public ResponseEntity<String> applyJob(@RequestBody JobSeekerApplication application, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user");
+		if (jobSeeker !=  null) {
+			JobSeekerApplication applicationStatus = jobSeeeApplicationService.applyJob(application, jobSeeker);
+			if(applicationStatus != null) {
+				return new ResponseEntity<>("Job Created", HttpStatus.CREATED); 
+			}
+			return new ResponseEntity<>("Already Applied to Job", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	
+	
+	
 	
 }
