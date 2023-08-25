@@ -1,0 +1,1 @@
+Trial to reduce the same persist logic
