@@ -64,6 +64,22 @@ public class JobSeeker {
 	@JsonManagedReference
 	private List<JobSeekerApplication> jobSeekerApplication;
 	
+	@OneToMany(mappedBy = "jobSeeker", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<WorkExperience> experience;
+	
+	@OneToMany(mappedBy = "jobSeeker", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<Project> project;
+	
+	@OneToMany(mappedBy = "jobSeeker", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<ExtraAccomplishment> accomplishment;
+	
+	@OneToMany(mappedBy = "jobSeeker", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<Certification> certificate;
+	
 	@Column(name = "first_name", nullable = false)
 	private String firstName;
 
@@ -347,6 +363,38 @@ public class JobSeeker {
 
 	public void setJobSeekerApplication(List<JobSeekerApplication> jobSeekerApplication) {
 		this.jobSeekerApplication = jobSeekerApplication;
+	}
+
+	public List<WorkExperience> getExperience() {
+		return experience;
+	}
+
+	public void setExperience(List<WorkExperience> experience) {
+		this.experience = experience;
+	}
+
+	public List<Project> getProject() {
+		return project;
+	}
+
+	public void setProject(List<Project> project) {
+		this.project = project;
+	}
+
+	public List<ExtraAccomplishment> getAccomplishment() {
+		return accomplishment;
+	}
+
+	public void setAccomplishment(List<ExtraAccomplishment> accomplishment) {
+		this.accomplishment = accomplishment;
+	}
+
+	public List<Certification> getCertificate() {
+		return certificate;
+	}
+
+	public void setCertificate(List<Certification> certificate) {
+		this.certificate = certificate;
 	}
 	
 	

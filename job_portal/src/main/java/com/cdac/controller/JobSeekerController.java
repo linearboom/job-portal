@@ -14,28 +14,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cdac.entity.Certification;
 import com.cdac.entity.Designation;
 import com.cdac.entity.EducationDetail;
+import com.cdac.entity.ExtraAccomplishment;
 import com.cdac.entity.JobSeeker;
 import com.cdac.entity.JobType;
 import com.cdac.entity.JobTypePreference;
 import com.cdac.entity.Location;
+import com.cdac.entity.Project;
 import com.cdac.entity.Qualification;
 import com.cdac.entity.SkillSet;
 import com.cdac.entity.UserSkillSet;
+import com.cdac.entity.WorkExperience;
 import com.cdac.entity.employer.Job;
 import com.cdac.entity.employer.JobSeekerApplication;
 import com.cdac.repository.SkillSetRepo;
+import com.cdac.service.CertificationService;
 import com.cdac.service.DesignationPreferenceService;
 import com.cdac.service.DesignationService;
 import com.cdac.service.EducationDetailService;
+import com.cdac.service.ExtraAccomplishmentService;
 import com.cdac.service.JobSeekerService;
 import com.cdac.service.JobTypePreferenceService;
 import com.cdac.service.JobTypeService;
 import com.cdac.service.LocationUserPreferenceService;
+import com.cdac.service.ProjectService;
 import com.cdac.service.QualificationService;
 import com.cdac.service.SkillSetService;
 import com.cdac.service.UserSkillSetService;
+import com.cdac.service.WorkExperienceService;
 import com.cdac.service.job.JobSeekerApplicationService;
 import com.cdac.service.job.JobService;
 
@@ -82,6 +90,20 @@ public class JobSeekerController {
 	@Autowired
 	private JobSeekerApplicationService jobSeeeApplicationService;
 	
+	@Autowired
+	private WorkExperienceService workExperienceService;
+	
+	
+	@Autowired
+	private ProjectService projectService;
+	
+	
+	@Autowired
+	private ExtraAccomplishmentService extraAccomplishmentService;
+	
+	@Autowired
+	private CertificationService certificationService;
+	
 
 
 	
@@ -114,7 +136,7 @@ public class JobSeekerController {
 	public ResponseEntity<JobSeeker> validateUser(String name, HttpSession session){
 		JobSeeker seeker = (JobSeeker) session.getAttribute("user");
 		if (seeker != null) {
-			return new ResponseEntity<JobSeeker>(seeker, HttpStatus.OK);
+			return  new ResponseEntity<JobSeeker>(jobSeekerService.findUser(seeker.getJobSeekerId()), HttpStatus.OK);
 		}
 		return new ResponseEntity<JobSeeker>(seeker, HttpStatus.OK); 
 	}
@@ -201,7 +223,7 @@ public class JobSeekerController {
 		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
 		if (jobSeeker != null) {
 			educationDetailService.addEducation(education, jobSeeker);
-			return new ResponseEntity<String>("1",HttpStatus.OK);
+			return new ResponseEntity<String>("Education Updated",HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 		}
@@ -284,6 +306,90 @@ public class JobSeekerController {
 		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
 	
+	
+	@PostMapping("addWorkExp")
+	public ResponseEntity<String> addWorkExp(@RequestBody WorkExperience experience, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			workExperienceService.addWorkExperience(experience, jobSeeker);
+			return new ResponseEntity<>("Work Experience Added", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	
+	/* Deletes Work Experience by Id
+	 * 
+	 */
+	@PostMapping("deleteWorkExp")
+	public ResponseEntity<String> deleteWorkExp(@RequestBody WorkExperience experience, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			workExperienceService.deleteWorkExperience(experience.getExperienceId());
+			return new ResponseEntity<>("Work Experience Deleted", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	
+	@PostMapping("addProject")
+	public ResponseEntity<String> addProject(@RequestBody Project project, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			projectService.addProject(project, jobSeeker);
+			return new ResponseEntity<>("Project Added", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	
+	@PostMapping("deleteProject")
+	public ResponseEntity<String> deleteProject(@RequestBody Project project, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			projectService.deleteProject(project);
+			return new ResponseEntity<>("Project Deleted", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	
+	@PostMapping("addAccomplishment")
+	public ResponseEntity<String> addAccomplishment(@RequestBody ExtraAccomplishment accomplishment, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			extraAccomplishmentService.addAccomplishment(accomplishment, jobSeeker);
+			return new ResponseEntity<>("Project Added", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	@PostMapping("deleteAccomplishment")
+	public ResponseEntity<String> deleteAccomplishment(@RequestBody ExtraAccomplishment accomplishment, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			extraAccomplishmentService.deleteAccomplishment(accomplishment.getId());
+			return new ResponseEntity<>("Project Added", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	@PostMapping("addCertification")
+	public ResponseEntity<String> addCertification(@RequestBody Certification certification, HttpSession session){
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			certificationService.addCertificate(certification, jobSeeker);
+			return new ResponseEntity<>("Project Added", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	
+
+	
+	
+	
+	
 	@GetMapping("listAllJobs")
 	public ResponseEntity<List<Job>> listAllJobs(){
 		return new ResponseEntity<List<Job>>( jobService.listAll(), HttpStatus.OK);
@@ -314,6 +420,9 @@ public class JobSeekerController {
 		}
 		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
+	
+	
+	
 	
 	
 	

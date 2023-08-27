@@ -1,6 +1,7 @@
 package com.cdac.service;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,15 @@ public class JobSeekerService {
 		validatedUser.setMobile(jobSeeker.getMobile());
 		// Additional Update Details
 		jobSeekerRepo.save(validatedUser);
+	}
+
+	public JobSeeker findUser(int jobSeekerId) {
+		// TODO Auto-generated method stub
+		Optional<JobSeeker> seeker =  jobSeekerRepo.findById(jobSeekerId);
+		if (seeker.isPresent()) {
+			return seeker.get();
+		}
+		return null;
 	}
 }
 
