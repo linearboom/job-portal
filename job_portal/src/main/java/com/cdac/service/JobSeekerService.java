@@ -29,6 +29,7 @@ public class JobSeekerService {
 		validatedUser.setFirstName(jobSeeker.getFirstName());
 		validatedUser.setLastName(jobSeeker.getLastName());
 		validatedUser.setMobile(jobSeeker.getMobile());
+		validatedUser.setProfileImagePath(jobSeeker.getProfileImagePath());
 		// Additional Update Details
 		jobSeekerRepo.save(validatedUser);
 	}
