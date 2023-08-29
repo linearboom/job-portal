@@ -3,6 +3,7 @@ package com.cdac.service.job;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -119,6 +120,19 @@ public class JobService {
 
 	public List<Job> findContainingTitle(String titleName) {
 		return jobRepo.findByJobTitleStartingWithIgnoreCase(titleName);
+	}
+
+
+	public Job findJob(int jobId) {
+		Optional<Job> job = jobRepo.findById(jobId);
+		return job.get();
+		
+	}
+
+
+	public void delete(Job job) {
+		jobRepo.delete(job);
+		
 	}
 
 

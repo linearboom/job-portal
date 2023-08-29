@@ -93,10 +93,22 @@ public class EmployerController {
 			Job trial = new Job();
 			trial.setJobId(newJob.getJobId());
 			jobPostedSkillSetService.addJobSkills(job.getSkills(), trial);
+			newJob = jobService.findJob(newJob.getJobId());
 			return new ResponseEntity<>(newJob, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
+	
+	@PostMapping("deleteJob")
+	public ResponseEntity<String> deleteJob(@RequestBody Job job, HttpSession session ){
+		Employer employer = (Employer) session.getAttribute("user");
+		if (employer != null) {
+			jobService.delete(job);
+			return new ResponseEntity<>("Job Sucessfully Deleted", HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null, HttpStatus.OK);
+	}
+	
 	
 	@PostMapping("viewApplicants")
 	public ResponseEntity<List<JobApplicationDTO>> viewApplicants(@RequestBody Job job, HttpSession session ){
