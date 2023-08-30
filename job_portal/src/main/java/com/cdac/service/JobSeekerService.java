@@ -42,5 +42,16 @@ public class JobSeekerService {
 		}
 		return null;
 	}
+
+	public void updateSummary(String resumeHeadline, JobSeeker jobSeeker) {
+		jobSeeker.setResumeHeadline(resumeHeadline);
+		jobSeekerRepo.save(jobSeeker);
+		
+	}
+
+	public void updateResume(JobSeeker seeker) {
+		jobSeekerRepo.save(seeker);
+		
+	}
 }
 

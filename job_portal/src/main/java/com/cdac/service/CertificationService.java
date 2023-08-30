@@ -18,5 +18,10 @@ public class CertificationService {
     	certificate.getId().setJobSeekerId(jobSeeker.getJobSeekerId());
         return certificationRepo.save(certificate);
     }
+
+	public void deleteCertificate(Certification certification, JobSeeker jobSeeker) {
+		certificationRepo.delete(certification);
+		
+	}
     
 }

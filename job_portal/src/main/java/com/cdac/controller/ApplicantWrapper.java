@@ -4,6 +4,8 @@ public class ApplicantWrapper {
 	private int jobSeekerId;
 	private int applicationId;
 	private int jobId;
+	private boolean showContact;
+	
 	
 	public int getJobId() {
 		return jobId;
@@ -22,6 +24,12 @@ public class ApplicantWrapper {
 	}
 	public void setApplicationId(int applicationId) {
 		this.applicationId = applicationId;
+	}
+	public boolean isShowContact() {
+		return showContact;
+	}
+	public void setShowContact(boolean showContact) {
+		this.showContact = showContact;
 	}
 	
 }

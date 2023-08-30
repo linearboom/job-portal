@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "job_seeker")
-public class JobSeeker {
+public class JobSeeker{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -398,12 +398,4 @@ public class JobSeeker {
 	}
 	
 	
-
-
-
-	
-	
-
-
-
 }

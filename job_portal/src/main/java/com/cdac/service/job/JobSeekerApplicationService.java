@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cdac.controller.ApplicantWrapper;
 import com.cdac.dto.JobApplicationDTO;
 import com.cdac.dto.JobSeekerDTO;
 import com.cdac.entity.JobSeeker;
@@ -22,6 +23,9 @@ public class JobSeekerApplicationService {
 
 	@Autowired
 	private JobSeekerApplicationRepo jobSeekerApplicationRepo;
+	
+	
+	
 
 	public JobSeekerApplication applyJob(JobSeekerApplication application, JobSeeker jobSeeker) {
 		JobSeekerApplication ApplicationExists = jobSeekerApplicationRepo.findByJobSeekerAndJob(jobSeeker,
@@ -80,7 +84,7 @@ public class JobSeekerApplicationService {
 		return applicantionsDTO;
 	}
 
-	public JobSeekerDTO getApplicantDetails(int jobSeekerId, int applicationId, int jobId, int employerId) {
+	public JobSeekerDTO getApplicantDetails(ApplicantWrapper details, int jobSeekerId, int applicationId, int jobId, int employerId) {
 		Optional<JobSeekerApplication> application = jobSeekerApplicationRepo.findById(applicationId);
 		if (application.isPresent()) {
 			System.out.println("Debug");
@@ -95,8 +99,7 @@ public class JobSeekerApplicationService {
 		        jobSeeker.setNoticePeriod(seeker.getNoticePeriod());
 		        jobSeeker.setCurrentDesignation(seeker.getCurrentDesignation());
 		        jobSeeker.setProfileImagePath(seeker.getProfileImagePath());
-		        jobSeeker.setEmail(seeker.getEmail());
-		        jobSeeker.setMobile(seeker.getMobile());
+		        
 		        jobSeeker.setUserSkillSets(seeker.getUserSkillSets());
 		        jobSeeker.setUserLocations(seeker.getUserLocations());
 		        jobSeeker.setEducation(seeker.getEducation());
@@ -109,6 +112,22 @@ public class JobSeekerApplicationService {
 		        jobSeeker.setResumeHeadline(seeker.getResumeHeadline());
 		        jobSeeker.setResumePath(seeker.getResumePath());
 		        jobSeeker.setProfileImagePath(seeker.getProfileImagePath());
+		        
+		        if (details.isShowContact() == true || application.get().getIsContacted() == '1') {
+		        	jobSeeker.setEmail(seeker.getEmail());
+			        jobSeeker.setMobile(seeker.getMobile());
+			        JobSeekerApplication persist =  application.get();
+			        if (persist.getIsContacted() != '1') {
+			        persist.setIsContacted('1');
+			        System.out.println("Changing Application Status to 1");
+			        jobSeekerApplicationRepo.save(persist);
+			        }
+//			        if (application.get().getIsContacted() == ' ') {
+//			        	application.get().setIsContacted('1');
+//			        	jobSeekerApplicationRepo.save(application.get());
+//			        }
+		        }
+		       
 		        return jobSeeker;
 			}
 		}

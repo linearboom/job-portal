@@ -278,7 +278,7 @@ public class JobSeekerController {
 		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
 		if (jobSeeker != null) {
 			jobTypePreferenceService.deleteJobPreference(jobType, jobSeeker);
-			return new ResponseEntity<>("1", HttpStatus.OK);
+			return new ResponseEntity<>("Education Deleted", HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
@@ -352,7 +352,7 @@ public class JobSeekerController {
 		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
 		if (jobSeeker != null) {
 			extraAccomplishmentService.addAccomplishment(accomplishment, jobSeeker);
-			return new ResponseEntity<>("Project Added", HttpStatus.OK);
+			return new ResponseEntity<>("Accomplishment Added", HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
@@ -363,7 +363,7 @@ public class JobSeekerController {
 		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
 		if (jobSeeker != null) {
 			extraAccomplishmentService.deleteAccomplishment(accomplishment.getId());
-			return new ResponseEntity<>("Project Added", HttpStatus.OK);
+			return new ResponseEntity<>("Accomplishment Deleted", HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
@@ -373,10 +373,32 @@ public class JobSeekerController {
 		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
 		if (jobSeeker != null) {
 			certificationService.addCertificate(certification, jobSeeker);
-			return new ResponseEntity<>("Project Added", HttpStatus.OK);
+			return new ResponseEntity<>("Certificate Added", HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
 	}
+	
+	@PostMapping("deleteCertification")
+	public ResponseEntity<String> deleteCertification(@RequestBody Certification certification, HttpSession session) {
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			certificationService.deleteCertificate(certification, jobSeeker);
+			return new ResponseEntity<>("Certification Deleted", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	@PostMapping("addSummary")
+	public ResponseEntity<String> addSummary(@RequestBody JobSeeker inputSeeker, HttpSession session) {
+		JobSeeker jobSeeker = (JobSeeker) session.getAttribute("user"); // Session Validation
+		if (jobSeeker != null) {
+			jobSeekerService.updateSummary(inputSeeker.getResumeHeadline(), jobSeeker);
+			return new ResponseEntity<>("Summary Updated", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Session Expired", HttpStatus.OK);
+	}
+	
+	
 
 	@GetMapping("listAllJobs")
 	public ResponseEntity<List<Job>> listAllJobs() {
@@ -467,5 +489,49 @@ public class JobSeekerController {
 		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG) // Adjust the content type based on your image type
 				.body(imageResource);
 	}
+	
+	@RequestMapping(value = "/uploadResume", consumes = {
+			org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE })
+	public String uploadResume(@RequestParam("file") MultipartFile file,
+			HttpSession session) {
+		JobSeeker seeker = (JobSeeker) session.getAttribute("user");
+		if (seeker != null) {
+			try {
+				
+				String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+				String directoryPath = "C:\\Users\\Dell\\Desktop\\CDAC\\Training\\FINAL PROJECT\\Database\\Resume";
+				createDirectoryIfNotExists(directoryPath); // Create directory if it doesn't exist
+				String filePath = directoryPath + "/" + fileName;
+				file.transferTo(new File(filePath));
+				String encodedPath = URLEncoder.encode(filePath, "UTF-8");
+				seeker.setResumePath(encodedPath);
+				jobSeekerService.updateResume(seeker);
+
+				return "Resume File Updated";
+			} catch (IOException e) {
+				e.printStackTrace();
+				return "Error Updating the  data";
+			} catch (Exception e) {
+				e.printStackTrace();
+				return "Internal Server Error Contact Admin";
+			}
+		}
+		return "Session Expired";
+	}
+	
+	@GetMapping("/getResume")
+	public ResponseEntity<Resource> getResume(@RequestParam String imagePath) throws IOException {
+		// Read the image file as a Resource
+		String decodedFilePath = URLDecoder.decode(imagePath, "UTF-8");
+		System.out.println(decodedFilePath);
+		Resource imageResource = new FileSystemResource(decodedFilePath);
+
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF) // Adjust the content type based on your image type
+				.body(imageResource);
+	}
+	
+	
+	
+	
 
 }
