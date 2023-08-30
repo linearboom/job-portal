@@ -12,5 +12,6 @@ public interface JobRepo extends JpaRepository<Job, Integer> {
 	List<Job> findByJobTitleStartingWithIgnoreCase(String title);
 	
 	
+	
 
 }

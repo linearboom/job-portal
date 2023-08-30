@@ -139,7 +139,7 @@ public class JobSeeker{
 
 	public List<UserSkillSet> getUserSkillSets() {
 		return userSkillSets;
-	}
+	}	
 
 	public void setUserSkillSets(List<UserSkillSet> userSkillSets) {
 		this.userSkillSets = userSkillSets;

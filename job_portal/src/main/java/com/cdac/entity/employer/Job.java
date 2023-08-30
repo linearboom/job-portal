@@ -69,7 +69,7 @@ public class Job {
 //	@JoinColumn(name = "industry_id")
 //	private Industry industry;
 	
-	@Column(name = "industry_id")
+	@Column(name = "industry_id")	
 	private int industryId;
 
 	@Column(name = "wfh_preference")

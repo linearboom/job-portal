@@ -444,13 +444,17 @@ public class JobSeekerController {
 
 	@RequestMapping(value = "/updatePersonalProfileImage", consumes = {
 			org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE })
-	public String updateProfile(@RequestParam("file") MultipartFile file, @RequestParam("jobSeeker") String jobSeeker,
+	public String updateProfile(@RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("jobSeeker") String jobSeeker,
 			HttpSession session) {
 		JobSeeker seeker = (JobSeeker) session.getAttribute("user");
 		if (seeker != null) {
 			try {
 				JobSeeker updatedSeeker = new ObjectMapper().readValue(jobSeeker, JobSeeker.class);
-
+				//System.out.println("File Creation");
+				if (file ==  null || file.isEmpty()) {
+					jobSeekerService.updateProfile(updatedSeeker, seeker);
+					return "Profile Updated";
+				}
 				String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 				String directoryPath = "C:\\Users\\Dell\\Desktop\\CDAC\\Training\\FINAL PROJECT\\Database\\Image Data";
 				createDirectoryIfNotExists(directoryPath); // Create directory if it doesn't exist
@@ -458,6 +462,7 @@ public class JobSeekerController {
 				file.transferTo(new File(filePath));
 				String encodedPath = URLEncoder.encode(filePath, "UTF-8");
 				updatedSeeker.setProfileImagePath(encodedPath);
+				
 				jobSeekerService.updateProfile(updatedSeeker, seeker);
 
 				return "Profile Updated";
@@ -529,6 +534,8 @@ public class JobSeekerController {
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF) // Adjust the content type based on your image type
 				.body(imageResource);
 	}
+	
+	
 	
 	
 	

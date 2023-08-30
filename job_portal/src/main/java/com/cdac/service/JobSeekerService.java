@@ -1,12 +1,15 @@
 package com.cdac.service;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cdac.entity.JobSeeker;
+import com.cdac.entity.UserSkillSet;
+import com.cdac.entity.employer.Job;
 import com.cdac.repository.JobSeekerRepo;
 
 @Service
@@ -53,5 +56,16 @@ public class JobSeekerService {
 		jobSeekerRepo.save(seeker);
 		
 	}
+	
+	/*
+	 * Reccomends Jobs based on Job Seeker Skills
+	 */
+	public List<Job> reccomendation(JobSeeker seeker) {
+		List<UserSkillSet> skills = seeker.getUserSkillSets();
+		
+		return null;
+	}
+	
+	
 }
 
