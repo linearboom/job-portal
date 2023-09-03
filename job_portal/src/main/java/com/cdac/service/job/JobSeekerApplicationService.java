@@ -17,12 +17,16 @@ import com.cdac.entity.employer.Employer;
 import com.cdac.entity.employer.Job;
 import com.cdac.entity.employer.JobSeekerApplication;
 import com.cdac.repository.job.JobSeekerApplicationRepo;
+import com.cdac.service.EmailService;
 
 @Service
 public class JobSeekerApplicationService {
 
 	@Autowired
 	private JobSeekerApplicationRepo jobSeekerApplicationRepo;
+	
+	@Autowired
+	private EmailService emailService;
 	
 	
 	
@@ -121,7 +125,10 @@ public class JobSeekerApplicationService {
 			        persist.setIsContacted('1');
 			        System.out.println("Changing Application Status to 1");
 			        jobSeekerApplicationRepo.save(persist);
+			        Job job = application.get().getJob();
+			        emailService.notifySeeker(job, seeker);
 			        }
+			       
 //			        if (application.get().getIsContacted() == ' ') {
 //			        	application.get().setIsContacted('1');
 //			        	jobSeekerApplicationRepo.save(application.get());

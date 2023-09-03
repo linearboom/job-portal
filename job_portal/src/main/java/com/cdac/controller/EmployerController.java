@@ -35,6 +35,7 @@ import com.cdac.entity.employer.Employer;
 import com.cdac.entity.employer.Job;
 import com.cdac.entity.employer.JobPostedSkillSet;
 import com.cdac.entity.employer.JobSeekerApplication;
+import com.cdac.service.EmailService;
 import com.cdac.service.employer.EmployerService;
 import com.cdac.service.job.JobPostedSkillSetService;
 import com.cdac.service.job.JobSeekerApplicationService;
@@ -57,6 +58,10 @@ public class EmployerController {
 
 	@Autowired
 	private JobSeekerApplicationService jobSeekerApplicationService;
+	
+	
+	@Autowired
+	private EmailService emailService;
 
 	@PostMapping("login")
 	public ResponseEntity<Employer> login(@RequestBody Employer employer, HttpSession session) {
@@ -68,6 +73,8 @@ public class EmployerController {
 			return new ResponseEntity<>(validatedUser, HttpStatus.OK); // Check what will be the status for this
 		}
 	}
+	
+	// Ideally login should be in a diffe cont
 
 	@PostMapping("update")
 	public ResponseEntity<Employer> update(@RequestBody Employer employer, HttpSession session) {
@@ -92,6 +99,7 @@ public class EmployerController {
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody Employer employer) {
 		employerService.newUser(employer);
+		emailService.newRegister("Recruiter");
 		return new ResponseEntity<>("Succesful", HttpStatus.OK);
 	}
 

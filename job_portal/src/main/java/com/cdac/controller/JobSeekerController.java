@@ -17,6 +17,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +49,7 @@ import com.cdac.service.CertificationService;
 import com.cdac.service.DesignationPreferenceService;
 import com.cdac.service.DesignationService;
 import com.cdac.service.EducationDetailService;
+import com.cdac.service.EmailService;
 import com.cdac.service.ExtraAccomplishmentService;
 import com.cdac.service.JobSeekerService;
 import com.cdac.service.JobTypePreferenceService;
@@ -114,15 +116,26 @@ public class JobSeekerController {
 
 	@Autowired
 	private CertificationService certificationService;
+	
+	@Autowired
+	private EmailService emailService;
+	
+//	@Autowired
+//	private PasswordEncoder passwordEncoder;
 
 	@GetMapping("/hello")
 	public String hello() {
-		return "Hello";
+		String pass = "1234";
+		String encrypt = "S";//passwordEncoder.encode(pass);
+		emailService.sendEmail("raj.chaudharii1998@gmail.com", "Hi", "HELLOOO");
+		return encrypt;
+		
 	}
 
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody JobSeeker jobSeeker) {
 		jobSeekerService.newUser(jobSeeker);
+		emailService.newRegister("Job Seeker");
 		return new ResponseEntity<>("Succesful", HttpStatus.OK);
 	}
 
@@ -141,6 +154,7 @@ public class JobSeekerController {
 	public ResponseEntity<JobSeeker> validateUser(String name, HttpSession session) {
 		JobSeeker seeker = (JobSeeker) session.getAttribute("user");
 		if (seeker != null) {
+			
 			return new ResponseEntity<JobSeeker>(jobSeekerService.findUser(seeker.getJobSeekerId()), HttpStatus.OK);
 		}
 		return new ResponseEntity<JobSeeker>(seeker, HttpStatus.OK);
